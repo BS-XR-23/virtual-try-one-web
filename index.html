@@ -1,24 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>MediaPipe Pose Landmarker</title>
-        <link rel="stylesheet" href="./style.css" />
-    </head>
-    <body>
-        <div id="liveView" class="videoView">
-            <!-- <canvas class="output_canvas2" id="output_canvas2"></canvas> -->
-            <div id="container">
-                <video id="webcam" playsinline></video>
-                <canvas class="output_canvas" id="output_canvas"></canvas>
-            </div>
+<head>
+    <meta charset="UTF-8" />
+    <title>MediaPipe Pose Landmarker</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+    <div id="liveView" class="videoView">
+        <div id="container">
+            <video id="webcam" playsinline></video>
+            <canvas class="output_canvas" id="output_canvas"></canvas>
         </div>
-        <div class="buttons"> 
-            <button id="webcamButton">Start Webcam</button>
-            <button id="videoButton">Play Video</button>
-        </div>
-        <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/build/three.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/GLTFLoader.js"></script>
-        <script type="module" src="./script.js"></script>
-    </body>
+    </div>
+    
+    <script type="module"  src="./scripts/allConfig.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.19"></script>
+    <script type="module" src="./scripts/lil-gui.js"></script>
+    <script type="module" src="./script.js"></script>
+</body>
 </html>

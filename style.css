@@ -48,25 +48,3 @@ html, body {
 .output_canvas2 {
     z-index: 100;
 }
-.buttons {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 10;
-}
-
-button {
-   
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    z-index: 10;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
