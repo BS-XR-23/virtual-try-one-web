@@ -27,12 +27,16 @@ export default class DrawingManager {
     drawCustomLandmarks(landmarks) {
         const updatedLandmarks = landmarks;
 
-        const hipCenter = {
-            x: (landmarks[23].x + landmarks[24].x) / 2,
-            y: (landmarks[23].y + landmarks[24].y) / 2,
-            z: (landmarks[23].z + landmarks[24].z) / 2,
+        // Calculate the body center, 11, 12, 23, 24 are the hip landmarks
+
+        const bodyCenter = {
+            x: (landmarks[11].x + landmarks[12].x + landmarks[23].x + landmarks[24].x) / 4,
+            y: (landmarks[11].y + landmarks[12].y + landmarks[23].y + landmarks[24].y) / 4,
+            z: (landmarks[11].z + landmarks[12].z + landmarks[23].z + landmarks[24].z) / 4,
         };
-        updatedLandmarks.push(hipCenter);
+
+        updatedLandmarks.push(bodyCenter);
+        modelLoader.updateModel(updatedLandmarks);
         return updatedLandmarks;
     }
 }

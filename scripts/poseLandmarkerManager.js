@@ -2,7 +2,7 @@ import { SMOOTHING_FACTOR, MODEL_PATH } from "./allConfig.js";
 import {
     PoseLandmarker,
     FilesetResolver,
-} from "https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0";
+} from "./packages/tasks-vision/vision_bundle.mjs";
 
 export default class PoseLandmarkerManager {
     constructor(videoElement, canvasCtx, drawingUtils) {
@@ -19,7 +19,7 @@ export default class PoseLandmarkerManager {
 
     async createPoseLandmarker() {
         const vision = await FilesetResolver.forVisionTasks(
-            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+            "./scripts/packages/tasks-vision/wasm"
         );
         this.poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
             baseOptions: {
