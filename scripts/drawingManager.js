@@ -35,7 +35,15 @@ export default class DrawingManager {
             z: (landmarks[11].z + landmarks[12].z + landmarks[23].z + landmarks[24].z) / 4,
         };
 
-        updatedLandmarks.push(bodyCenter);
+        // hip center landmark 23 and 24 are the hip landmarks
+        const hipCenter= {
+            x: (landmarks[23].x + landmarks[24].x) / 2,
+            y: (landmarks[23].y + landmarks[24].y) / 2,
+            z: (landmarks[23].z + landmarks[24].z) / 2,
+            name: "hipCenter",
+        };
+
+        updatedLandmarks.push(hipCenter);
         modelLoader.updateModel(updatedLandmarks);
         return updatedLandmarks;
     }

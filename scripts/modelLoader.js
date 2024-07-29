@@ -23,18 +23,25 @@ export default class ModelLoader {
         const light = new THREE.AmbientLight(0xffffff);
         this.scene.add(light);
         this.shirtModel = null;
+        this.shirtMiddle = null;
     }
 
     loadModel() {
+        console.log("this.shirtModelPath", this.shirtModelPath);
+
         const loader = new GLTFLoader();
         loader.load(
             this.shirtModelPath,
             (gltf) => {
                 this.shirtModel = gltf.scene;
 
-                this.shirtModel.scale.set(1,1,1);
+                this.shirtModel.scale.set(3, 3, 3);
                 this.shirtModel.rotation.set(0, 0, 0);
                 this.scene.add(this.shirtModel);
+                // get the shirt element by object name
+
+                this.shirtMiddle =
+                    this.shirtModel.getObjectByName("mixamorig1Hips");
             },
             (xhr) => {
                 console.log(
@@ -52,46 +59,86 @@ export default class ModelLoader {
     }
 
     updateModelPosition(position) {
-        if (this.shirtModel) {
-            this.shirtModel.position.set(position.x, position.y, position.z);
+        if (this.shirtMiddle) {
+            this.shirtMiddle.position.set(position.x, position.y, position.z);
         }
     }
 
     updateModelRotation(rotation) {
-        if (this.shirtModel) {
-            this.shirtModel.rotation.set(rotation.x, rotation.y, rotation.z);
+        if (this.shirtMiddle) {
+            this.shirtMiddle.rotation.set(rotation.x, rotation.y, rotation.z);
         }
     }
 
     updateModel(landmarks) {
-        if (!this.shirtModel) return;
-    
-        // Assuming landmarks[11] and landmarks[12] are the left and right shoulders
-        // Assuming landmarks[23] and landmarks[24] are the left and right hips
-        const leftShoulder = landmarks[11];
-        const rightShoulder = landmarks[12];
-        const leftHip = landmarks[23];
-    
-        // Calculate the center point between the shoulders
-        const centerX = (leftShoulder.x + rightShoulder.x) / 2;
-        const centerY = (leftShoulder.y + rightShoulder.y) / 2;
-    
-        // Calculate the T-shirt width and height
-        const shoulderWidth = Math.abs(rightShoulder.x - leftShoulder.x);
-        const torsoHeight = Math.abs(leftHip.y - leftShoulder.y);
-        const tshirtWidth = shoulderWidth * 11.9; // Adjust scale as needed
-        const tshirtHeight = torsoHeight * 11.5; // Adjust scale as needed
-    
-        // Adjust T-shirt position dynamically
-        const dynamicYOffset = torsoHeight * 0.25; // Adjust this multiplier as needed for better positioning
-    
-        const tshirtX = centerX * WIDTH;
-        const tshirtY = (centerY - dynamicYOffset) * HEIGHT;
-        const tshirtZ = 0; // Assuming z is 0 for simplicity, adjust as needed
-    
-        // Update model position and scale
-        this.updateModelPosition({ x: tshirtX, y: -tshirtY, z: tshirtZ });
-        this.shirtModel.scale.set(tshirtWidth, tshirtHeight, tshirtWidth);
+        if (!this.shirtMiddle) return;
+        // last landmark is the hip center
+        const hipCenter = landmarks[landmarks.length - 1];
+        console.log("hipCenter", hipCenter);
+
+        const { x, y } = this.getModelPosition(hipCenter);
+
+        // Update model position
+        this.updateModelPosition({ x, y, z: 0 });
+        console.log('model position', { x, y, z: 0 });
+        
+
+        // Update model scaling
+        const scalingFactor = this.getScalingFactor(landmarks);
+        this.shirtModel.scale.set(scalingFactor, scalingFactor, scalingFactor);
     }
+
+    getModelPosition(hipCenter) {
+        const videoX = hipCenter.x;
+        const videoY = hipCenter.y;
+        const videoPositions = [
+            { x: 0.3987945711638808, y: 0.5348200025552332 },
+            { x: 0.5309684502336924, y: 0.6880486344089233 },
+        ];
+        const modelPositions = [
+            { x: 0.48, y: -0.12 },
+            { x: -0.15, y: -0.43 },
+        ];
+
+        const tX =
+            (videoX - videoPositions[0].x) /
+            (videoPositions[1].x - videoPositions[0].x);
+        const tY =
+            (videoY - videoPositions[0].y) /
+            (videoPositions[1].y - videoPositions[0].y);
+
+        const modelX =
+            modelPositions[0].x +
+            tX * (modelPositions[1].x - modelPositions[0].x);
+        const modelY =
+            modelPositions[0].y +
+            tY * (modelPositions[1].y - modelPositions[0].y);
+
+        return { x: modelX, y: modelY };
+    }
+    getScalingFactor(poseLandmarks) {
+        // Landmarks
+        const leftShoulder = poseLandmarks[11];
+        const rightShoulder = poseLandmarks[12];
+        const leftHip = poseLandmarks[23];
+        const rightHip = poseLandmarks[24];
     
+        // Calculate distances
+        const shoulderWidth = this.calculateDistance(leftShoulder, rightShoulder);
+        const hipWidth = this.calculateDistance(leftHip, rightHip);
+    
+        // Average width
+        const averageWidth = (shoulderWidth + hipWidth) / 2;
+    
+        // Define a base width and calculate the scaling factor
+        const baseWidth = .1; // Adjust based on your model's default width
+        const scalingFactor = averageWidth / baseWidth;
+    
+        return scalingFactor*5;
+    }
+    calculateDistance(point1, point2) {
+        const dx = point2.x - point1.x;
+        const dy = point2.y - point1.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
 }
